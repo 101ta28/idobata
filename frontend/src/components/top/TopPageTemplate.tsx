@@ -38,7 +38,7 @@ const TopPageTemplate = ({
   const themesAsQuestions = latestThemes.map((theme) => ({
     id: theme._id,
     title: theme.title,
-    description: theme.description || theme.title,
+    description: theme.title,
     participantCount: theme.commentCount || 0,
     commentCount: theme.keyQuestionCount || 0,
     href: `/themes/${theme._id}`,
@@ -49,8 +49,8 @@ const TopPageTemplate = ({
     ? latestQuestions
         .map((q) => ({
           id: q._id,
-          title: q.questionText,
-          description: q.tagLine || `${q.questionText.substring(0, 100)}...`,
+          title: q.tagLine || "お題",
+          description: q.questionText,
           participantCount: q.uniqueParticipantCount || 0,
           commentCount: q.issueCount || 0 + (q.solutionCount || 0),
           likeCount: q.likeCount || 0,
@@ -96,7 +96,7 @@ const TopPageTemplate = ({
                 lastUpdated: q.createdAt || new Date().toISOString(),
                 themeId: q.themeId,
                 tagLine: q.tagLine,
-                description: q.tagLine || `${q.questionText.substring(0, 100)}...`,
+                description: q.questionText,
                 participantCount: q.uniqueParticipantCount || 0,
                 commentCount: q.issueCount || 0 + (q.solutionCount || 0),
               }))
@@ -108,7 +108,7 @@ const TopPageTemplate = ({
                 postCount: theme.commentCount || 0,
                 lastUpdated: new Date().toISOString(),
                 themeId: theme.id,
-                description: theme.description,
+                description: theme.title,
                 participantCount: theme.participantCount || 0,
                 commentCount: theme.commentCount || 0,
                 href: theme.href,

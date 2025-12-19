@@ -164,12 +164,12 @@ const Top = () => {
   if (isMockMode || topPageData) {
     const templateProps = isMockMode
       ? {
-          discussions: mockDiscussionData,
-          themes: mockThemeData,
-          questions: mockQuestions,
+          latestThemes: mockThemeData,
+          latestQuestions: mockQuestions,
           latestOpinions: [], // Mock mode doesn't have opinions yet
         }
       : {
+          latestThemes: topPageData?.latestThemes || [],
           latestQuestions: topPageData?.latestQuestions || [],
           latestOpinions: topPageData?.latestOpinions || [],
         };

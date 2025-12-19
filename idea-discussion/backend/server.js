@@ -114,7 +114,9 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(frontendBuildPath));
 
   // For any request that doesn't match an API route, serve the React app
-  app.get("*", (req, res) => {
+  // Express v5 (path-to-regexp v6) does not support "*" routes.
+  // Use a regex route instead, and avoid masking /api 404s.
+  app.get(/^\/(?!api(?:\/|$)).*/, (req, res) => {
     res.sendFile(path.join(frontendBuildPath, "index.html"));
   });
 }

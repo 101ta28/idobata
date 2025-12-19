@@ -43,15 +43,16 @@ ENV MCP_SERVER_PATH=/app/policy-edit/mcp/dist/main.js
 # Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Copy the private key into the final image
-# IMPORTANT: Ensure the key exists at ./policy-edit/backend/secrets/github-key.pem during build
-COPY ./policy-edit/backend/secrets/github-key.pem /app/secrets/github-key.pem
+# Runtime secret injection (Railway-friendly)
+COPY ./policy-edit/backend/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Copy backend package.json (optional, if needed by CMD or runtime)
 COPY ./policy-edit/backend/package.json ./policy-edit/backend/package.json
 
 WORKDIR /app/policy-edit/backend
 EXPOSE 3001
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "build/index.js"]
 
 

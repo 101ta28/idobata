@@ -33,17 +33,6 @@ WORKDIR /app/idea-discussion/backend
 EXPOSE 3000
 CMD ["npm", "start"]
 
-# Development stage for hot-reload
-FROM node:20-alpine AS development
-WORKDIR /app
-
-# Copy installed node_modules from the first stage
-COPY --from=backend-builder /app/node_modules ./node_modules
-
-# Set environment variables
-ENV NODE_ENV=development
-ENV PATH /app/node_modules/.bin:$PATH
-
-WORKDIR /app/idea-discussion/backend
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
+# Note:
+# A separate dev image is defined in `idea-discussion/backend/Dockerfile.dev`.
+# Keep this Dockerfile production-only so platforms like Railway use the correct stage by default.

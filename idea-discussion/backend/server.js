@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -106,19 +107,27 @@ app.use("/api/likes", likeRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- Serve static files in production ---
-// This section will be useful when deploying to production
-// For development, we'll handle this with a fallback route
-if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React app build directory
-  const frontendBuildPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(frontendBuildPath));
+// Use only when bundling a frontend build into the same container.
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.SERVE_FRONTEND === "true"
+) {
+  const frontendBuildPath = path.join(process.cwd(), "frontend/dist");
+  const indexPath = path.join(frontendBuildPath, "index.html");
 
-  // For any request that doesn't match an API route, serve the React app
-  // Express v5 (path-to-regexp v6) does not support "*" routes.
-  // Use a regex route instead, and avoid masking /api 404s.
-  app.get(/^\/(?!api(?:\/|$)).*/, (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, "index.html"));
-  });
+  if (fs.existsSync(indexPath)) {
+    app.use(express.static(frontendBuildPath));
+
+    // Express v5 (path-to-regexp v6) does not support "*" routes.
+    // Use a regex route instead, and avoid masking /api 404s.
+    app.get(/^\/(?!api(?:\/|$)).*/, (req, res) => {
+      res.sendFile(indexPath);
+    });
+  } else {
+    console.warn(
+      `SERVE_FRONTEND is enabled but ${indexPath} does not exist. Skipping static frontend.`
+    );
+  }
 }
 
 // For development, add a fallback route to handle non-API requests
